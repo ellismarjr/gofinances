@@ -12,6 +12,7 @@ import {
 import { NewTransaction } from './src/pages/NewTransaction';
 
 import theme from './src/global/styles/theme';
+import { CategorySelect } from './src/pages/CategorySelect';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
