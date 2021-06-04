@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { Modal } from 'react-native';
 
+import { useForm } from 'react-hook-form';
+
+
 import { Input } from '../../components/Form/Input';
+import { InputForm } from '../../components/Form/InputForm';
 import { Button } from '../../components/Form/Button';
 import { TransactionTypeButton } from '../../components/Form/TransactionTypeButton';
 import { CategorySelectButton } from '../../components/Form/CategorySelectButton';
+import { CategorySelect } from '../CategorySelect';
 
 import {
   Container,
@@ -14,7 +19,12 @@ import {
   Fields,
   TransactionsType
 } from './styles';
-import { CategorySelect } from '../CategorySelect';
+
+interface FormData {
+  name: string;
+  amount: string;
+}
+
 
 export function NewTransaction() {
   const [category, setCategory] = useState({
@@ -23,6 +33,8 @@ export function NewTransaction() {
   });
   const [transactionType, setTransactionType] = useState('');
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
+
+  const { control, handleSubmit, formState: { errors } } = useForm();
 
   function handleTrnasactionTypeSelect(type: 'up' | 'down') {
     setTransactionType(type);
@@ -36,6 +48,16 @@ export function NewTransaction() {
     setCategoryModalOpen(true);
   }
 
+  function handleNewTransaction(formData: FormData) {
+    const data = {
+      name: formData.name,
+      amount: formData.amount,
+      transactionType,
+      category: category.key
+    }
+    console.log(data)
+  }
+
 
 
   return (
@@ -46,8 +68,16 @@ export function NewTransaction() {
 
       <Form>
         <Fields>
-          <Input placeholder="Nome" />
-          <Input placeholder="Preço" />
+          <InputForm
+            name="name"
+            control={control}
+            placeholder="Nome"
+          />
+          <InputForm
+            name="amount"
+            control={control}
+            placeholder="Preço"
+          />
 
           <TransactionsType>
             <TransactionTypeButton
@@ -64,10 +94,13 @@ export function NewTransaction() {
             />
           </TransactionsType>
 
-          <CategorySelectButton onPress={handleOpenSelectCategoryModal} title={category.name} />
+          <CategorySelectButton
+            onPress={handleOpenSelectCategoryModal}
+            title={category.name}
+          />
         </Fields>
 
-        <Button title="Enviar" />
+        <Button onPress={handleSubmit(handleNewTransaction)} title="Enviar" />
       </Form>
 
       <Modal
