@@ -1,4 +1,3 @@
-import { registerRootComponent } from 'expo';
 import React from 'react';
 import { TouchableOpacityProps } from 'react-native';
 
