@@ -10,7 +10,8 @@ import {
   Photo,
   User,
   UserGretting,
-  UserName
+  UserName,
+  LogoutButton
 } from './styles';
 
 export function Header() {
@@ -24,7 +25,9 @@ export function Header() {
             <UserName>Júnior</UserName>
           </User>
         </UserInfo>
-        <Feather name="power" size={24} color={theme.colors.attention} />
+        <LogoutButton onPress={() => { }}>
+          <Feather name="power" size={24} color={theme.colors.attention} />
+        </LogoutButton>
       </UserWrapper>
     </Container>
   );
