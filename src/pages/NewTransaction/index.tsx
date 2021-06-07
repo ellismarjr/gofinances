@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, Keyboard, Modal, TouchableWithoutFeedback } from 'react-native';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from "yup";
 import { useForm } from 'react-hook-form';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import uuid from 'react-native-uuid';
+import { useNavigation } from '@react-navigation/core';
 
 
-import { Input } from '../../components/Form/Input';
+
+
 import { InputForm } from '../../components/Form/InputForm';
 import { Button } from '../../components/Form/Button';
 import { TransactionTypeButton } from '../../components/Form/TransactionTypeButton';
@@ -42,9 +46,13 @@ export function NewTransaction() {
   const [transactionType, setTransactionType] = useState('');
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
 
-  const { control, handleSubmit, formState: { errors } } = useForm({
+  const { control, handleSubmit, formState: { errors }, reset } = useForm({
     resolver: yupResolver(schema)
   });
+
+  const navigation = useNavigation();
+
+  const dataKey = '@gofinances:transactions';
 
   function handleTrnasactionTypeSelect(type: 'up' | 'down') {
     setTransactionType(type);
@@ -58,7 +66,7 @@ export function NewTransaction() {
     setCategoryModalOpen(true);
   }
 
-  function handleNewTransaction(formData: FormData) {
+  async function handleNewTransaction(formData: FormData) {
     if (!transactionType) {
       return Alert.alert('Escolha um tipo de transação');
     }
@@ -67,14 +75,48 @@ export function NewTransaction() {
       return Alert.alert('Escolha uma categoria');
     }
 
-    const data = {
+    const newTransaction = {
+      id: String(uuid.v4()),
       name: formData.name,
       amount: formData.amount,
       transactionType,
-      category: category.key
+      category: category.key,
+      date: new Date()
     }
-    console.log(data)
+
+    try {
+      const response = await AsyncStorage.getItem(dataKey);
+      const currentData = response ? JSON.parse(response) : [];
+
+      const dataFomatted = [
+        ...currentData,
+        newTransaction
+      ];
+
+      await AsyncStorage.setItem(dataKey, JSON.stringify(dataFomatted));
+
+      reset()
+      setTransactionType('');
+      setCategory({
+        key: 'category',
+        name: 'Categoria'
+      });
+      navigation.navigate('Dashboard');
+
+    } catch (err) {
+      console.log(err);
+      Alert.alert('Não foi possível salvar!');
+    }
   }
+
+  useEffect(() => {
+    async function loadTransactions() {
+      const response = await AsyncStorage.getItem(dataKey);
+      console.log(JSON.parse(response!));
+    }
+
+    loadTransactions();
+  }, []);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
