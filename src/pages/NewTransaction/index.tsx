@@ -53,7 +53,7 @@ export function NewTransaction() {
 
   const navigation = useNavigation();
 
-  function handleTrnasactionTypeSelect(type: 'up' | 'down') {
+  function handleTrnasactionTypeSelect(type: 'positive' | 'negative') {
     setTransactionType(type);
   }
 
@@ -78,7 +78,7 @@ export function NewTransaction() {
       id: String(uuid.v4()),
       name: formData.name,
       amount: formData.amount,
-      transactionType,
+      type: transactionType,
       category: category.key,
       date: new Date()
     }
@@ -111,7 +111,6 @@ export function NewTransaction() {
   useEffect(() => {
     async function loadTransactions() {
       const response = await AsyncStorage.getItem(asyncStorageDataKey);
-      console.log(JSON.parse(response!));
     }
 
     loadTransactions();
@@ -144,16 +143,16 @@ export function NewTransaction() {
 
             <TransactionsType>
               <TransactionTypeButton
-                isActive={transactionType === 'up'}
+                isActive={transactionType === 'positive'}
                 title="Income"
                 type="up"
-                onPress={() => handleTrnasactionTypeSelect('up')}
+                onPress={() => handleTrnasactionTypeSelect('positive')}
               />
               <TransactionTypeButton
-                isActive={transactionType === 'down'}
+                isActive={transactionType === 'negative'}
                 title="Outcome"
                 type="down"
-                onPress={() => handleTrnasactionTypeSelect('down')}
+                onPress={() => handleTrnasactionTypeSelect('negative')}
               />
             </TransactionsType>
 
