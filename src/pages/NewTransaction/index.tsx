@@ -37,7 +37,6 @@ const schema = Yup.object().shape({
     .required('Preço é obrigatório')
 });
 
-
 export function NewTransaction() {
   const [category, setCategory] = useState({
     key: 'category',
