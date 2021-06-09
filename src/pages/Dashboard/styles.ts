@@ -42,8 +42,8 @@ export const TrnsactionsList = styled(
     paddingBottom: Platform.OS === 'ios' ? getBottomSpace() : 0
   })``;
 
-  export const LoadContaienr = styled.View`
-    flex: 1;
-    justify-content: center;
-    align-items: center;
-  `;
+export const LoadContaienr = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+`;
