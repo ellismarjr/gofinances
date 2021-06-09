@@ -16,6 +16,8 @@ import { TransactionTypeButton } from '../../components/Form/TransactionTypeButt
 import { CategorySelectButton } from '../../components/Form/CategorySelectButton';
 import { CategorySelect } from '../CategorySelect';
 
+import { asyncStorageDataKey } from '../../shared/constants';
+
 import {
   Container,
   Header,
@@ -51,8 +53,6 @@ export function NewTransaction() {
 
   const navigation = useNavigation();
 
-  const dataKey = '@gofinances:transactions';
-
   function handleTrnasactionTypeSelect(type: 'up' | 'down') {
     setTransactionType(type);
   }
@@ -84,7 +84,7 @@ export function NewTransaction() {
     }
 
     try {
-      const response = await AsyncStorage.getItem(dataKey);
+      const response = await AsyncStorage.getItem(asyncStorageDataKey);
       const currentData = response ? JSON.parse(response) : [];
 
       const dataFomatted = [
@@ -92,7 +92,7 @@ export function NewTransaction() {
         newTransaction
       ];
 
-      await AsyncStorage.setItem(dataKey, JSON.stringify(dataFomatted));
+      await AsyncStorage.setItem(asyncStorageDataKey, JSON.stringify(dataFomatted));
 
       reset()
       setTransactionType('');
@@ -110,7 +110,7 @@ export function NewTransaction() {
 
   useEffect(() => {
     async function loadTransactions() {
-      const response = await AsyncStorage.getItem(dataKey);
+      const response = await AsyncStorage.getItem(asyncStorageDataKey);
       console.log(JSON.parse(response!));
     }
 

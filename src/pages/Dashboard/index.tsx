@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Header } from '../../components/Header';
 import { HighlightCard } from '../../components/HighlightCard';
 import { TransactionCard, ITransactionCard } from '../../components/TransactionCard';
+
+import { asyncStorageDataKey } from '../../shared/constants';
+
 
 import {
   Container,
@@ -17,37 +21,43 @@ export interface DataListProps extends ITransactionCard {
 }
 
 export function Dashboard() {
-  const data: DataListProps[] = [{
-    id: '1',
-    type: 'positive',
-    title: "Desenvolvimento de site",
-    amount: "R$ 12.000,00",
-    category: {
-      name: 'Vendas',
-      icon: 'dollar-sign'
-    },
-    date: "13/04/2020",
-  }, {
-    id: '2',
-    type: 'negative',
-    title: "Hamburguer Pizzy",
-    amount: "R$ 59,00",
-    category: {
-      name: 'Alimentação',
-      icon: 'coffee'
-    },
-    date: "10/04/2020",
-  }, {
-    id: '3',
-    type: 'negative',
-    title: "Aluguel do apartamento",
-    amount: "R$ 1.200,00",
-    category: {
-      name: 'Casa',
-      icon: 'shopping-bag'
-    },
-    date: "10/04/2020",
-  }];
+  const [transactions, setTransactions] = useState<DataListProps[]>();
+
+  async function getAllTransactions() {
+    const response = await AsyncStorage.getItem(asyncStorageDataKey);
+
+    const responseParsed = response ? JSON.parse(response) : [];
+
+    const transactionsFormatted: DataListProps[] = 
+      responseParsed.map((transaction: DataListProps) => {
+        const amount = Number(transaction.amount).toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        });
+
+        const date = Intl.DateTimeFormat('pt-BR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: '2-digit'
+        }).format(new Date(transaction.date));
+
+        return {
+          id: transaction.id,
+          name: transaction.name,
+          amount,
+          type: transaction.type,
+          category: transaction.category,
+          date
+        }
+    });
+
+    setTransactions(transactionsFormatted);
+  }
+
+
+  useEffect(() => {
+    getAllTransactions()
+  }, []);
 
   return (
     <Container>
@@ -77,7 +87,7 @@ export function Dashboard() {
       <Transactions>
         <Title>Listagem</Title>
         <TrnsactionsList
-          data={data}
+          data={transactions}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <TransactionCard data={item} />}
         />
