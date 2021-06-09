@@ -41,3 +41,9 @@ export const TrnsactionsList = styled(
     showsVerticalScrollIndicator: false,
     paddingBottom: Platform.OS === 'ios' ? getBottomSpace() : 0
   })``;
+
+  export const LoadContaienr = styled.View`
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+  `;
