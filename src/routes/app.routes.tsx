@@ -6,6 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Dashboard } from '../pages/Dashboard';
 import { NewTransaction } from '../pages/NewTransaction';
 import { Platform } from 'react-native';
+import { Resume } from '../pages/Resume';
 
 const { Navigator, Screen } = createBottomTabNavigator();
 
@@ -66,7 +67,7 @@ export function AppRoutes() {
           ))
         }}
         name="Resumo"
-        component={NewTransaction}
+        component={Resume}
       />
     </Navigator>
   );
