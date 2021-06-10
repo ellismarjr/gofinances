@@ -21,7 +21,7 @@ import {
 } from './styles';
 import { dateFormat } from '../../utils/dateFormat';
 
-export interface DataListProps extends ITransactionCard {
+export interface Transaction extends ITransactionCard {
   id: string;
 }
 
@@ -37,13 +37,13 @@ interface HightlightData {
 }
 
 export function Dashboard() {
-  const [transactions, setTransactions] = useState<DataListProps[]>();
+  const [transactions, setTransactions] = useState<Transaction[]>();
   const [hightlightData, setHightlightData] = useState<HightlightData>({} as HightlightData);
   const [isLoading, setIsLoading] = useState(true);
 
   const theme = useTheme();
 
-  function getLastTransactionDate(transactionsData: DataListProps[],
+  function getLastTransactionDate(transactionsData: Transaction[],
     type: 'positive' | 'negative') {
     const lastTransactions = Math.max.apply(Math, transactionsData
       .filter((transaction) => transaction.type === type)
@@ -64,13 +64,13 @@ export function Dashboard() {
   async function getAllTransactions() {
     const response = await AsyncStorage.getItem(asyncStorageDataKey);
 
-    const transactionsParsed: DataListProps[] = response ? JSON.parse(response) : [];
+    const transactionsParsed: Transaction[] = response ? JSON.parse(response) : [];
 
     let entriesTotal = 0;
     let expensiveTotal = 0;
 
-    const transactionsFormatted: DataListProps[] =
-      transactionsParsed.map((transaction: DataListProps) => {
+    const transactionsFormatted: Transaction[] =
+      transactionsParsed.map((transaction: Transaction) => {
         if (transaction.type === 'positive') {
           entriesTotal += Number(transaction.amount);
         } else {
