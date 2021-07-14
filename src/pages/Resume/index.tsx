@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { HistoryCard } from '../../components/HistoryCard';
@@ -17,6 +17,7 @@ import {
 } from './styles';
 import { ScrollView } from 'react-native';
 import { EmptyMessage } from '../../components/EmptyMessage';
+import { useFocusEffect } from '@react-navigation/core';
 
 interface CategoryData {
   id: string;
@@ -59,9 +60,10 @@ export function Resume() {
     setTotalByCategories(totalByCategory);
   }
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, []));
 
   return (
     <Container>
