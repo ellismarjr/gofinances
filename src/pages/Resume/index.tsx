@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { VictoryPie } from 'victory-native'
 import { useFocusEffect } from '@react-navigation/core';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 import { HistoryCard } from '../../components/HistoryCard';
 import { ITransactionCard } from '../../components/TransactionCard';
@@ -92,7 +93,13 @@ export function Resume() {
 
       {totalByCategories.length > 0
         ? (
-          <Content>
+          <Content
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingHorizontal: 24,
+              paddingBottom: useBottomTabBarHeight()
+            }}
+          >
             <ChartContainer>
               <VictoryPie
                 data={totalByCategories}
