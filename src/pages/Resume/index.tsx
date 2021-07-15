@@ -21,7 +21,11 @@ import {
   Header,
   Title,
   Content,
-  ChartContainer
+  ChartContainer,
+  MonthSelect,
+  MonthSelectButton,
+  MonthSelectIcon,
+  Month
 } from './styles';
 import { useTheme } from 'styled-components';
 
@@ -100,6 +104,17 @@ export function Resume() {
               paddingBottom: useBottomTabBarHeight()
             }}
           >
+            <MonthSelect>
+              <MonthSelectButton>
+                <MonthSelectIcon name="chevron-left" size={24} />
+              </MonthSelectButton>
+
+              <Month>Julho</Month>
+
+              <MonthSelectButton>
+                <MonthSelectIcon name="chevron-right" size={24} />
+              </MonthSelectButton>
+            </MonthSelect>
             <ChartContainer>
               <VictoryPie
                 data={totalByCategories}
