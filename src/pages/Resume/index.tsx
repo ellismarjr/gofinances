@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { VictoryPie } from 'victory-native'
@@ -103,9 +104,10 @@ export function Resume() {
     setIsLoading(false);
   }
 
-  useEffect(() => {
+  useFocusEffect(
+    useCallback(() => {
     loadData()
-  }, [selectedDate]);
+  }, [selectedDate]));
 
   return (
     <Container>
