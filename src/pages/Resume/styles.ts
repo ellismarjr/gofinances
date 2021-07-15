@@ -39,6 +39,7 @@ export const MonthSelect = styled.View`
   align-items: center;
 
   margin-top: 24px;
+  padding: 0 24px;
 `;
 
 export const MonthSelectButton = styled(BorderlessButton)``;
@@ -48,4 +49,10 @@ export const MonthSelectIcon = styled(Feather)``;
 export const Month = styled.Text`
   font-family: ${({ theme }) => theme.fonts.regular};
   font-size: ${RFValue(20)}px;
+`;
+
+export const LoadContaienr = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
 `;

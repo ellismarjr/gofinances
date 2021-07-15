@@ -1,9 +1,12 @@
-import React, { useCallback, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { VictoryPie } from 'victory-native'
-import { useFocusEffect } from '@react-navigation/core';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { addMonths, subMonths, format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { useTheme } from 'styled-components';
 
 import { HistoryCard } from '../../components/HistoryCard';
 import { ITransactionCard } from '../../components/TransactionCard';
@@ -18,6 +21,7 @@ import { Transaction } from '../Dashboard';
 
 import {
   Container,
+  LoadContaienr,
   Header,
   Title,
   Content,
@@ -27,7 +31,6 @@ import {
   MonthSelectIcon,
   Month
 } from './styles';
-import { useTheme } from 'styled-components';
 
 interface CategoryData {
   id: string;
@@ -39,15 +42,32 @@ interface CategoryData {
 }
 
 export function Resume() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [totalByCategories, setTotalByCategories] = useState<CategoryData[]>([]);
   const theme = useTheme();
+  const bottomTabBarHeight = useBottomTabBarHeight();
+
+  function handleDateChange(action: 'next' | 'prev') {
+    setIsLoading(true);
+    if (action === 'next') {
+      const newDate = addMonths(selectedDate, 1);
+      setSelectedDate(newDate);
+    } else {
+      const newDate = subMonths(selectedDate, 1);
+      setSelectedDate(newDate);
+    }
+  }
 
   async function loadData() {
     const response = await AsyncStorage.getItem(asyncStorageDataKey);
 
     const responseParsed: Transaction[] = response ? JSON.parse(response) : [];
 
-    const expensives = responseParsed.filter(expensive => expensive.type === 'negative');
+    const expensives = responseParsed.filter(expensive =>
+      expensive.type === 'negative' &&
+      new Date(expensive.date).getMonth() === selectedDate.getMonth() &&
+      new Date(expensive.date).getFullYear() === selectedDate.getFullYear());
 
     const expensivesTotal = expensives.reduce((acc: number, expensive: ITransactionCard) => {
       return acc + Number(expensive.amount)
@@ -76,76 +96,82 @@ export function Resume() {
           color: category.color,
           percent
         });
-
-
       }
     });
 
     setTotalByCategories(totalByCategory);
+    setIsLoading(false);
   }
 
-  useFocusEffect(
-    useCallback(() => {
-      loadData();
-    }, []));
+  useEffect(() => {
+    loadData()
+  }, [selectedDate]);
 
   return (
     <Container>
+
       <Header>
         <Title>Resumo por categoria</Title>
       </Header>
 
-      {totalByCategories.length > 0
-        ? (
-          <Content
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{
-              paddingHorizontal: 24,
-              paddingBottom: useBottomTabBarHeight()
-            }}
-          >
-            <MonthSelect>
-              <MonthSelectButton>
-                <MonthSelectIcon name="chevron-left" size={24} />
-              </MonthSelectButton>
+      {isLoading ? (
+        <LoadContaienr>
+          <ActivityIndicator color={theme.colors.primary} size="large" />
+        </LoadContaienr>
+      ) :
+        <>
+          <MonthSelect>
+            <MonthSelectButton onPress={() => handleDateChange('prev')}>
+              <MonthSelectIcon name="chevron-left" size={24} />
+            </MonthSelectButton>
 
-              <Month>Julho</Month>
+            <Month>{format(selectedDate, 'MMMM, yyyy', { locale: ptBR })}</Month>
 
-              <MonthSelectButton>
-                <MonthSelectIcon name="chevron-right" size={24} />
-              </MonthSelectButton>
-            </MonthSelect>
-            <ChartContainer>
-              <VictoryPie
-                data={totalByCategories}
-                colorScale={totalByCategories.map(category => category.color)}
-                style={{
-                  labels: {
-                    fontSize: RFValue(18),
-                    fontWeight: 'bold',
-                    fill: theme.colors.shape
-                  }
+            <MonthSelectButton onPress={() => handleDateChange('next')}>
+              <MonthSelectIcon name="chevron-right" size={24} />
+            </MonthSelectButton>
+          </MonthSelect>
+
+          {totalByCategories.length > 0
+            ? (
+              <Content
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{
+                  paddingHorizontal: 24,
+                  paddingBottom: bottomTabBarHeight
                 }}
-                labelRadius={50}
-                x="percent"
-                y="totalFormatted"
-              />
-            </ChartContainer>
-            {totalByCategories.map(category => (
-              <HistoryCard
-                key={category.id}
-                title={category.name}
-                amount={category.totalFormatted}
-                color={category.color}
-              />
-            ))}
-          </Content>
-        )
-        : (
-          <EmptyMessage title="Poxa" message="Nenhuma transação feita ainda!" />
-        )}
-
-
+              >
+                <ChartContainer>
+                  <VictoryPie
+                    data={totalByCategories}
+                    colorScale={totalByCategories.map(category => category.color)}
+                    style={{
+                      labels: {
+                        fontSize: RFValue(18),
+                        fontWeight: 'bold',
+                        fill: theme.colors.shape
+                      }
+                    }}
+                    labelRadius={50}
+                    x="percent"
+                    y="totalFormatted"
+                  />
+                </ChartContainer>
+                {totalByCategories.map(category => (
+                  <HistoryCard
+                    key={category.id}
+                    title={category.name}
+                    amount={category.totalFormatted}
+                    color={category.color}
+                  />
+                ))}
+              </Content>
+            )
+            : (
+              <EmptyMessage title="Poxa" message="Nenhuma transação encontrada!" />
+            )}
+        </>
+      }
     </Container>
   );
 }
