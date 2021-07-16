@@ -3,7 +3,7 @@ import { getBottomSpace } from 'react-native-iphone-x-helper';
 import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
 import styled from 'styled-components/native';
 
-import { DataListProps } from '.';
+import { Transaction } from '.';
 
 
 export const Container = styled.View`
@@ -20,7 +20,7 @@ export const HighlightCards = styled.ScrollView.attrs({
   width: 100%;
   
   position: absolute;
-  margin-top: ${RFPercentage(20)}px;
+  margin-top: ${RFPercentage(17)}px;
 `;
 
 export const Transactions = styled.View`
@@ -37,7 +37,7 @@ export const Title = styled.Text`
 `;
 
 export const TrnsactionsList = styled(
-  FlatList as new () => FlatList<DataListProps>).attrs({
+  FlatList as new () => FlatList<Transaction>).attrs({
     showsVerticalScrollIndicator: false,
     paddingBottom: Platform.OS === 'ios' ? getBottomSpace() : 0
   })``;
