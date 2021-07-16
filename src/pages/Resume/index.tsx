@@ -50,7 +50,6 @@ export function Resume() {
   const bottomTabBarHeight = useBottomTabBarHeight();
 
   function handleDateChange(action: 'next' | 'prev') {
-    setIsLoading(true);
     if (action === 'next') {
       const newDate = addMonths(selectedDate, 1);
       setSelectedDate(newDate);
@@ -61,6 +60,7 @@ export function Resume() {
   }
 
   async function loadData() {
+    setIsLoading(true);
     const response = await AsyncStorage.getItem(asyncStorageDataKey);
 
     const responseParsed: Transaction[] = response ? JSON.parse(response) : [];
