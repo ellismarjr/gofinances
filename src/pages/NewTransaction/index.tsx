@@ -34,8 +34,8 @@ interface FormData {
 
 const schema = Yup.object().shape({
   name: Yup.string().required('Nome é obrigatório'),
-  amount: Yup.number().typeError('Inform um valor numérico')
-    .positive('O valor não pode ser negativo')
+  amount: Yup.number().typeError('Informe um valor numérico')
+    .positive('O preço não pode ser negativo')
     .required('Preço é obrigatório')
 });
 
