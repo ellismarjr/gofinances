@@ -16,29 +16,28 @@ import {
 } from '@expo-google-fonts/poppins';
 
 import theme from './src/global/styles/theme';
-import { AppRoutes } from './src/routes/app.routes';
-import { SignIn } from './src/pages/SignIn';
 import { AuthProvider } from './src/contexts/AuthContext';
+import { Routes } from './src/routes';
+import { useAuth } from './src/hooks/useAuth';
 
 export default function App() {
+  const { isLoading } = useAuth();
   const [fontsLoaded] = useFonts({
     Poppins_400Regular,
     Poppins_500Medium,
     Poppins_700Bold
   });
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded || isLoading) {
     return <AppLoading />
   }
 
   return (
     <ThemeProvider theme={theme}>
       <StatusBar barStyle="light-content" backgroundColor={theme.colors.primary} />
-      <NavigationContainer>
         <AuthProvider>
-          <SignIn />
+          <Routes />
         </AuthProvider>
-      </NavigationContainer>
     </ThemeProvider>
   );
 }
