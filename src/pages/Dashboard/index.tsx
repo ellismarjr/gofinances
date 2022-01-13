@@ -47,9 +47,14 @@ export function Dashboard() {
 
   function getLastTransactionDate(transactionsData: Transaction[],
     type: 'positive' | 'negative') {
-    const lastTransactions = Math.max.apply(Math, transactionsData
-      .filter((transaction) => transaction.type === type)
-      .map((transaction) => new Date(transaction.date).getTime()));
+      const collectionFiltered = transactionsData.filter(transaction => transaction.type === type);
+
+      if (collectionFiltered.length === 0) {
+        return 0;
+      }
+
+    const lastTransactions = Math.max.apply(Math, 
+      collectionFiltered.map((transaction) => new Date(transaction.date).getTime()));
 
     const lastTransactionsDate = new Date(lastTransactions);
     const lastTransactionsFormatted = `${lastTransactionsDate.getDate()} de ${lastTransactionsDate.toLocaleString('pt-BR', { month: 'long' })}`;
@@ -96,18 +101,24 @@ export function Dashboard() {
 
     const lastTransactionEntries = getLastTransactionDate(transactionsParsed, 'positive');
     const lastTransactionExpensives = getLastTransactionDate(transactionsParsed, 'negative');
-    const totalInterval = `01 à ${getDateNowFormatted()}`;
+    const totalInterval = lastTransactionExpensives === 0 
+      ? 'Não há transações'
+      : `01 à ${getDateNowFormatted()}`;
 
     const amountTotalResult = entriesTotal - expensiveTotal;
 
     setHightlightData({
       entries: {
         amount: currencyFormat(entriesTotal),
-        lastTransaction: `Últim entrada dia ${lastTransactionEntries}`
+        lastTransaction: lastTransactionEntries === 0 
+          ? 'Não há transações' 
+          : `Últim entrada dia ${lastTransactionEntries}`
       },
       expensives: {
         amount: currencyFormat(expensiveTotal),
-        lastTransaction: `Última saída dia ${lastTransactionExpensives}`
+        lastTransaction: lastTransactionExpensives === 0 
+        ? 'Não há transações' 
+        : `Última saída dia ${lastTransactionExpensives}`
       },
       total: {
         amount: currencyFormat(amountTotalResult),
