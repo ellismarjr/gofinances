@@ -9,11 +9,11 @@ import { addMonths, subMonths, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useTheme } from 'styled-components';
 
+import { useAuth } from '../../hooks/useAuth';
+
 import { HistoryCard } from '../../components/HistoryCard';
 import { ITransactionCard } from '../../components/TransactionCard';
 import { EmptyMessage } from '../../components/EmptyMessage';
-
-import { asyncStorageDataKey } from '../../shared/constants';
 
 import { categories } from '../../utils/categories';
 import { currencyFormat } from '../../utils/currencyFormat';
@@ -43,6 +43,7 @@ interface CategoryData {
 }
 
 export function Resume() {
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [totalByCategories, setTotalByCategories] = useState<CategoryData[]>([]);
@@ -61,7 +62,8 @@ export function Resume() {
 
   async function loadData() {
     setIsLoading(true);
-    const response = await AsyncStorage.getItem(asyncStorageDataKey);
+    const dataKey = `@gofinances:transactions_user:${user?.id}`;
+    const response = await AsyncStorage.getItem(dataKey);
 
     const responseParsed: Transaction[] = response ? JSON.parse(response) : [];
 

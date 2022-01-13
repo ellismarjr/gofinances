@@ -7,8 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
 import { useNavigation } from '@react-navigation/core';
 
-
-
+import { useAuth } from '../../hooks/useAuth';
 
 import { InputForm } from '../../components/Form/InputForm';
 import { Button } from '../../components/Form/Button';
@@ -40,6 +39,7 @@ const schema = Yup.object().shape({
 });
 
 export function NewTransaction() {
+  const { user } = useAuth();
   const [category, setCategory] = useState({
     key: 'category',
     name: 'Categoria'
@@ -84,7 +84,8 @@ export function NewTransaction() {
     }
 
     try {
-      const response = await AsyncStorage.getItem(asyncStorageDataKey);
+      const dataKey = `@gofinances:transactions_user:${user?.id}`;
+      const response = await AsyncStorage.getItem(dataKey);
       const currentData = response ? JSON.parse(response) : [];
 
       const dataFomatted = [
@@ -92,7 +93,7 @@ export function NewTransaction() {
         newTransaction
       ];
 
-      await AsyncStorage.setItem(asyncStorageDataKey, JSON.stringify(dataFomatted));
+      await AsyncStorage.setItem(dataKey, JSON.stringify(dataFomatted));
 
       reset()
       setTransactionType('');

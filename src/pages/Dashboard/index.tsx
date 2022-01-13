@@ -4,12 +4,14 @@ import { useFocusEffect } from '@react-navigation/core';
 import { ActivityIndicator } from 'react-native';
 import { useTheme } from 'styled-components';
 
+import { useAuth } from '../../hooks/useAuth';
+
 import { Header } from '../../components/Header';
 import { HighlightCard } from '../../components/HighlightCard';
 import { TransactionCard, ITransactionCard } from '../../components/TransactionCard';
 
-import { asyncStorageDataKey } from '../../shared/constants';
 import { currencyFormat } from '../../utils/currencyFormat';
+import { dateFormat } from '../../utils/dateFormat';
 
 import {
   Container,
@@ -19,7 +21,6 @@ import {
   TrnsactionsList,
   LoadContaienr
 } from './styles';
-import { dateFormat } from '../../utils/dateFormat';
 
 export interface Transaction extends ITransactionCard {
   id: string;
@@ -37,6 +38,7 @@ interface HightlightData {
 }
 
 export function Dashboard() {
+  const { user } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>();
   const [hightlightData, setHightlightData] = useState<HightlightData>({} as HightlightData);
   const [isLoading, setIsLoading] = useState(true);
@@ -62,7 +64,8 @@ export function Dashboard() {
   }
 
   async function getAllTransactions() {
-    const response = await AsyncStorage.getItem(asyncStorageDataKey);
+    const dataKey = `@gofinances:transactions_user:${user?.id}`;
+    const response = await AsyncStorage.getItem(dataKey);
 
     const transactionsParsed: Transaction[] = response ? JSON.parse(response) : [];
 
